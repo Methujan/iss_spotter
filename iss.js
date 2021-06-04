@@ -32,26 +32,30 @@ const fetchMyIP = function(callback) {
   });
 };
 
-const fetchCoordsByIP = function(ip, callback){
-request(`https://freegeoip.app/json/${ip}`, function(error, response, body){
-  if(error){
-    console.log(`fetchCoordsByIP:${error}`);
-  }
-  if(body){
-    
+const fetchCoordsByIP = function(ip, callback) {
+  request(`https://freegeoip.app/json/${ip}`, function(error, response, body) {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+ 
+    if (response.statusCode !== 200) {
+      const msg = `Status Code ${response.statusCode} when fetching coordinates for IP. Response: ${body}`;
+      callback(Error(msg), null);
+      return;
+    }
+
     const ipForCoords = JSON.parse(body);
-    //const latitude = ipForCoords['latitude'];
-    //const longitude = ipForCoords['longitude'];
-    //console.log(`fetchCoordsByIP:${body}`);
-    //console.log(latitude, longitude);
-    const coordinates = {
-      latitude: ipForCoords['latitude'].toString(),
-      longitude: ipForCoords['longitude'].toString()
-    };
-    console.log(coordinates);
+    if (body) {
+    
+      const coordinates = {
+        latitude: ipForCoords['latitude'].toString(),
+        longitude: ipForCoords['longitude'].toString()
+      };
+      console.log(coordinates);
    
-  }
-})
-}
+    }
+  });
+};
 
 module.exports = { fetchMyIP, fetchCoordsByIP };
